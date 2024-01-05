@@ -1,5 +1,5 @@
 const { Sequelize, DataTypes } = require('sequelize');
-const sequelize = new Sequelize('mysql://root:votre_mot_de_passe@localhost:3306/gestion_automobile');
+const sequelize = require('../database/database');
 
 const Modele = sequelize.define('Modele', {
     nom: {
