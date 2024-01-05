@@ -5,6 +5,8 @@ const databaseRoute = require('./routes/databaseRoute')
 const moteurRoute = require('./routes/moteurRoute')
 const optionRoute = require('./routes/optionRoute')
 const voitureRoute = require('./routes/voitureRoute')
+const userRoute = require('./routes/userRoute')
+
 const app = express();
 
 app.use(express.json())
@@ -14,6 +16,7 @@ app.use('/database', databaseRoute)
 app.use('/moteur', moteurRoute)
 app.use('/option', optionRoute)
 app.use('/voiture', voitureRoute)
+app.use('/utilisateur', userRoute)
 
 app.listen(8000, () => {
     console.log('Serveur démarré (port 8000)');

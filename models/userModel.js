@@ -1,23 +1,32 @@
 const sequelize = require('../database/database')
 const { DataTypes } = require('sequelize')
 
-const Option = sequelize.define('Option', {
+const Utilisateur = sequelize.define('Utilisateur', {
     id: {
         type: DataTypes.INTEGER,
         allowNull: false,
         primaryKey: true,
         autoIncrement: true
     },
+    email: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        unique: true,
+    },
     nom: {
         type: DataTypes.STRING,
         allowNull: false
     },
-    description: {
+    prenom: {
         type: DataTypes.STRING,
         allowNull: false
     },
-    prix: {
-        type: DataTypes.FLOAT,
+    password: {
+        type: DataTypes.STRING,
+        allowNull: false
+    },
+    role: {
+        type: DataTypes.STRING,
         allowNull: false
     },
 }, {
@@ -25,4 +34,4 @@ const Option = sequelize.define('Option', {
     freezeTableName: true
   });
 
-module.exports = Option;
+module.exports = Utilisateur;
