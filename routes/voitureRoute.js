@@ -4,7 +4,7 @@ const voitureController = require('../controllers/voitureController');
 
 router.get('/voiture', voitureController.getAllVoitures);
 router.get('/voiture/:id', voitureController.getVoitureById);
-router.post('/voiture', voitureController.createVoiture);
+router.post('/create', voitureController.createVoiture);
 router.put('/voiture/:id/acheter', voitureController.acheterVoiture);
 
 

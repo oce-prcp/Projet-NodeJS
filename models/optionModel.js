@@ -25,4 +25,7 @@ const Option = sequelize.define('Option', {
     freezeTableName: true
   });
 
+Option.belongsToMany(Voiture, { through: 'VoitureOptions' });
+
+
 module.exports = Option;

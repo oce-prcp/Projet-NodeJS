@@ -1,4 +1,5 @@
 const sequelize = require('../database/database');
+const Moteur = require('./moteurModel');
 const { DataTypes } = require('sequelize');
 
 const Voiture = sequelize.define('Voiture', {
@@ -23,5 +24,8 @@ const Voiture = sequelize.define('Voiture', {
         defaultValue: 0.0 // Prix total par défaut pour chaque voiture
     }
 });
+
+Voiture.belongsTo(Moteur);
+Voiture.belongsToMany(Option, { through: 'VoitureOptions' });
 
 module.exports = Voiture;
