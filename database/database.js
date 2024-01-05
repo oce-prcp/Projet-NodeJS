@@ -1,7 +1,8 @@
 const Sequelize = require('sequelize');
+require('dotenv').config()
 
-const sequelize = new Sequelize('testSequelize', 'root', '', {
-    host : 'localhost',
+const sequelize = new Sequelize(process.env.DBDATABASE, process.env.DBUSER, process.env.DBPASSWORD, {
+    host : process.env.DBHOST,
     dialect : 'mariadb'
 });
 
