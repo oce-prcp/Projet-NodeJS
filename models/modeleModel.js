@@ -13,6 +13,14 @@ const Modele = sequelize.define('Modele', {
     moteur: {
         type: DataTypes.STRING,
         allowNull: false
+    },
+    isAcheter: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: false
+    },
+    prixTotal: {
+        type: DataTypes.FLOAT,
+        defaultValue: 0.0 // Prix total par défaut pour chaque voiture
     }
 });
 
