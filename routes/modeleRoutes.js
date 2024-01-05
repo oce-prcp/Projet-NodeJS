@@ -9,4 +9,5 @@ router.post('/modeles', modeleController.createModele);
 router.put('/modeles/:id/acheter', modeleController.acheterModele);
 
 
+
 module.exports = router;
