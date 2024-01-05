@@ -1,4 +1,10 @@
 const Voiture = require('../models/voitureModel');
+const Option = require('../models/optionModel');
+const Utilisateur = require('../models/userModel')
+
+const jwt = require('jsonwebtoken')
+
+require('dotenv').config()
 
 exports.getAllVoitures = async(req, res)=> {
     try {
@@ -15,6 +21,17 @@ exports.getVoitureById = async(req, res)=> {
         if (!voiture) {
             res.status(404).json({ message: 'Voiture non trouvé' });
         } else {
+            console.log(voiture)
+            let prixTotal = voiture.prix
+            console.log(await voiture.getOptions());
+            for (let option of await voiture.getOptions()){
+                prixTotal += option.prix;
+            }
+            console.log(prixTotal + " " + voiture.prixTotal)
+            if (prixTotal != voiture.prixTotal){
+                voiture.prixTotal = prixTotal    
+                voiture.save()
+            }
             res.json(voiture);
         }
     } catch (error) {
@@ -35,7 +52,8 @@ exports.createVoiture = async (req, res) => {
 
 
 exports.acheterVoiture = async(req, res)=> {
-    const { voitureId, prixVente } = req.body;
+    const voitureId = req.params.id
+    const token = req.params.token ? req.params.token : req.headers.authorization
 
     try {
         const voiture = await Voiture.findByPk(voitureId);
@@ -48,8 +66,21 @@ exports.acheterVoiture = async(req, res)=> {
             return res.status(400).json({ message: 'La Voiture a déjà été acheté' });
         }
 
+        if(token && process.env.SECRET_KEY){
+            console.log(token)
+            jwt.verify(token, process.env.SECRET_KEY, async(err, decoded) => {
+                const user = await Utilisateur.findOne({
+                    where: {
+                        email: decoded.email
+                    }
+                });
+                voiture.setUtilisateur(user);
+            })
+        } else {
+            return res.status(400).json({ message: 'Utilisateur non trouvé' });
+        }
+
         voiture.isAcheter = true;
-        voiture.prixTotal += prixVente; // Ajouter le prix de la vente au prix total
 
         await voiture.save();
 
@@ -57,6 +88,25 @@ exports.acheterVoiture = async(req, res)=> {
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
+}
+
+exports.add = async (req, res) => {
+    const option = await Option.findByPk(req.params.id);
+    const voiture = await Voiture.findByPk(req.body.id)
+    voiture.addOption(option)
+    
+    await voiture.save();
+    res.status(200).json({ message: "Option ajoutée avec succès"})
+}
+
+
+exports.removeOption = async (req, res) => {
+    const option = await Option.findByPk(req.params.id);
+    const voiture = await Voiture.findByPk(req.body.id)
+    voiture.removeOption(option);
+    
+    await voiture.save();
+    res.status(200).json({ message: "Option supprimé avec succès"})
 }
 
 exports.historiqueAchatsParMois = async (req, res) => {
