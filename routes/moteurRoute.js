@@ -1,10 +1,10 @@
 const express = require('express')
-const route = express.Router()
+const router = express.Router()
 const moteurController = require('../controller/moteurController')
 
-route.post('/create', moteurController.create)
-route.put('/update/:id', moteurController.update)
-route.get('/getAll', moteurController.getAll)
-route.get('/get/:id', moteurController.moteurId)
+router.post('/create', moteurController.create)
+router.put('/update/:id', moteurController.update)
+router.get('/getAll', moteurController.getAll)
+router.get('/get/:id', moteurController.moteurId)
 
-module.exports = route
+module.exports = router

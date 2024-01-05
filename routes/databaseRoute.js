@@ -1,7 +1,7 @@
 const express = require('express')
-const route = express.Router()
+const router = express.Router()
 const databaseController = require('../controller/databaseController')
 
-route.get('/createAllTable', databaseController.createAllTable)
+router.get('/createAllTable', databaseController.createAllTable)
 
-module.exports = route
+module.exports = router

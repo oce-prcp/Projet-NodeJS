@@ -1,7 +1,7 @@
 const sequelize = require('../database/database');
 const { Sequelize, DataTypes } = require('sequelize');
 
-const Modele = sequelize.define('Modele', {
+const Voiture = sequelize.define('Voiture', {
     nom: {
         type: DataTypes.STRING,
         allowNull: false
@@ -24,4 +24,4 @@ const Modele = sequelize.define('Modele', {
     }
 });
 
-module.exports = Modele;
+module.exports = Voiture;
