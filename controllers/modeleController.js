@@ -24,10 +24,19 @@ exports.getModeleById = async(req, res)=> {
 
 exports.createModele = async(req, res)=> {
     const { nom, portes, moteur } = req.body;
-    try {
-        const nouvelModele = await Modele.create({ nom, portes, moteur });
-        res.status(201).json(nouvelModele);
-    } catch (error) {
-        res.status(500).json({ message: error.message });
-    }
+    const INSERT_MODELE_QUERY = 'INSERT INTO modeles (nom, portes, moteur) VALUES (?, ?, ?)';
+    
+    db.query(INSERT_MODELE_QUERY, [nom, portes, moteur], (error, results) => {
+        if (error) {
+            res.status(500).json({ message: error.message });
+        } else {
+            const nouveauModele = {
+                id: results.insertId,
+                nom,
+                portes,
+                moteur
+            };
+            res.status(201).json(nouveauModele);
+        }
+    });
 }
