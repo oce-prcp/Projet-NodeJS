@@ -1,65 +1,57 @@
-const Modele = require('../models/modele');
+const Voiture = require('../models/modele');
 
-exports.getAllModeles = async(req, res)=> {
+exports.getAllVoitures = async(req, res)=> {
     try {
-        const modeles = await Modele.findAll();
-        res.json(modeles);
+        const voitures = await Voiture.findAll();
+        res.json(voitures);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
 }
 
-exports.getModeleById = async(req, res)=> {
+exports.getVoitureById = async(req, res)=> {
     try {
-        const modele = await Modele.findByPk(req.params.id);
-        if (!modele) {
+        const voiture = await Voiture.findByPk(req.params.id);
+        if (!voiture) {
             res.status(404).json({ message: 'Modèle non trouvé' });
         } else {
-            res.json(modele);
+            res.json(voiture);
         }
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
 }
 
-exports.createModele = async(req, res)=> {
+exports.createVoiture = async (req, res) => {
     const { nom, portes, moteur } = req.body;
-    const INSERT_MODELE_QUERY = 'INSERT INTO modeles (nom, portes, moteur) VALUES (?, ?, ?)';
-    
-    db.query(INSERT_MODELE_QUERY, [nom, portes, moteur], (error, results) => {
-        if (error) {
-            res.status(500).json({ message: error.message });
-        } else {
-            const nouveauModele = {
-                id: results.insertId,
-                nom,
-                portes,
-                moteur
-            };
-            res.status(201).json(nouveauModele);
-        }
-    });
-}
-
-
-exports.acheterModele = async(req, res)=> {
-    const { modeleId, prixVente } = req.body;
 
     try {
-        const modele = await Modele.findByPk(modeleId);
+        const newVoiture = await Voiture.create({ nom, portes, moteur });
+        res.status(201).json(newVoiture);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
 
-        if (!modele) {
+
+exports.acheterVoiture = async(req, res)=> {
+    const { voitureId, prixVente } = req.body;
+
+    try {
+        const voiture = await Voiture.findByPk(voitureId);
+
+        if (!voiture) {
             return res.status(404).json({ message: 'Modèle non trouvé' });
         }
 
-        if (modele.isAcheter) {
+        if (voiture.isAcheter) {
             return res.status(400).json({ message: 'Le modèle a déjà été acheté' });
         }
 
-        modele.isAcheter = true;
-        modele.prixTotal += prixVente; // Ajouter le prix de la vente au prix total
+        voiture.isAcheter = true;
+        voiture.prixTotal += prixVente; // Ajouter le prix de la vente au prix total
 
-        await modele.save();
+        await voiture.save();
 
         res.status(200).json({ message: 'Modèle acheté avec succès' });
     } catch (error) {
