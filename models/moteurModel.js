@@ -19,7 +19,10 @@ const Moteur = sequelize.define('Moteur', {
     taille: {
         type: DataTypes.INTEGER,
         allowNull: false
-    }
-});
+    },
+}, {
+    sequelize,
+    freezeTableName: true
+  });
 
 module.exports = Moteur;

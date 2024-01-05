@@ -6,7 +6,7 @@ const sequelize = new Sequelize(process.env.DBDATABASE, process.env.DBUSER, proc
     dialect : 'mariadb'
 });
 
-sequelize.authenticate().them(()=>{
+sequelize.authenticate().then(()=>{
     console.log('authentication success');
 }).catch(err=>{
     console.log(err);
