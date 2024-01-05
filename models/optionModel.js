@@ -1,6 +1,8 @@
 const sequelize = require('../database/database')
 const { DataTypes } = require('sequelize')
 
+const Voiture = require('./voitureModel')
+
 const Option = sequelize.define('Option', {
     id: {
         type: DataTypes.INTEGER,
@@ -25,7 +27,7 @@ const Option = sequelize.define('Option', {
     freezeTableName: true
   });
 
-Option.belongsToMany(Voiture, { through: 'VoitureOptions' });
+Option.belongsToMany(Voiture, { through: 'voiture_option' });
 
 
 module.exports = Option;

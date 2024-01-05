@@ -1,6 +1,8 @@
 const sequelize = require('../database/database');
-const Moteur = require('./moteurModel');
 const { DataTypes } = require('sequelize');
+
+const Moteur = require('./moteurModel');
+const Option = require('./optionModel')
 
 const Voiture = sequelize.define('Voiture', {
     nom: {
@@ -26,6 +28,6 @@ const Voiture = sequelize.define('Voiture', {
 });
 
 Voiture.belongsTo(Moteur);
-Voiture.belongsToMany(Option, { through: 'VoitureOptions' });
+// Voiture.belongsToMany(Option, { through: 'VoitureOptions' });
 
 module.exports = Voiture;
