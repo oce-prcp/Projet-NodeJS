@@ -1,7 +1,7 @@
 const sequelize = require('../database/database')
 const { DataTypes } = require('sequelize')
 
-const Voiture = require('./voitureModel')
+const Voiture = require('./VoitureModel')
 
 const Utilisateur = sequelize.define('Utilisateur', {
     id: {

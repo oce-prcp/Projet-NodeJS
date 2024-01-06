@@ -13,10 +13,6 @@ const Voiture = sequelize.define('Voiture', {
         type: DataTypes.INTEGER,
         allowNull: false
     },
-    moteur: {
-        type: DataTypes.STRING,
-        allowNull: false
-    },
     isAcheter: {
         type: DataTypes.BOOLEAN,
         defaultValue: false
