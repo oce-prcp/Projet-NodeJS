@@ -36,8 +36,6 @@ const Utilisateur = sequelize.define('Utilisateur', {
     freezeTableName: true
   });
 
-  
-Utilisateur.hasMany(Voiture);
 
 
 module.exports = Utilisateur;

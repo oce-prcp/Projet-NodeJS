@@ -1,7 +1,7 @@
 const sequelize = require('../database/database')
 const { DataTypes } = require('sequelize')
 
-const Voiture = require('./voitureModel')
+// const Voiture = require('./voitureModel')
 
 const Option = sequelize.define('Option', {
     id: {
@@ -27,7 +27,7 @@ const Option = sequelize.define('Option', {
     freezeTableName: true
   });
 
-Option.belongsToMany(Voiture, { through: 'voiture_option' });
+// Option.belongsToMany(Voiture, { through: 'voiture_option' });
 
 
 module.exports = Option;

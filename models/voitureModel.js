@@ -3,6 +3,7 @@ const { DataTypes } = require('sequelize');
 
 const Moteur = require('./moteurModel');
 const Option = require('./optionModel')
+const Utilisateur = require('./userModel')
 
 const Voiture = sequelize.define('Voiture', {
     nom: {
@@ -17,13 +18,23 @@ const Voiture = sequelize.define('Voiture', {
         type: DataTypes.BOOLEAN,
         defaultValue: false
     },
+    prix: {
+        type: DataTypes.FLOAT,
+        defaultValue: 0.0,
+        allowNull: false
+    },
     prixTotal: {
         type: DataTypes.FLOAT,
-        defaultValue: 0.0 // Prix total par défaut pour chaque voiture
-    }
-});
+        defaultValue: 0.0,
+        allowNull: false
+    },
+}, {
+    sequelize,
+    freezeTableName: true
+  });
 
 Voiture.belongsTo(Moteur);
-// Voiture.belongsToMany(Option, { through: 'VoitureOptions' });
+Voiture.belongsTo(Utilisateur);
+Voiture.belongsToMany(Option, { through: 'voiture_option' });
 
 module.exports = Voiture;
