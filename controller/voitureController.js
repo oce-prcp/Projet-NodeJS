@@ -1,6 +1,10 @@
+const Sequelize = require('sequelize');
+const Op = Sequelize.Op;
+
 const Voiture = require('../models/VoitureModel');
 const Option = require('../models/optionModel');
 const Utilisateur = require('../models/userModel')
+const Moteur = require('../models/moteurModel')
 
 const jwt = require('jsonwebtoken')
 
@@ -40,10 +44,10 @@ exports.getVoitureById = async(req, res)=> {
 }
 
 exports.createVoiture = async (req, res) => {
-    const { nom, portes, moteur } = req.body;
+    const { nom, portes, prix } = req.body;
 
     try {
-        const newVoiture = await Voiture.create({ nom, portes, moteur });
+        const newVoiture = await Voiture.create({ nom, portes, prix });
         res.status(201).json(newVoiture);
     } catch (error) {
         res.status(500).json({ message: error.message });
@@ -111,19 +115,75 @@ exports.removeOption = async (req, res) => {
 
 exports.historiqueAchatsParMois = async (req, res) => {
     try {
-        const result = await Voiture.findAll({
+        const historique = await Voiture.findAll({
             attributes: [
-                [Sequelize.fn('YEAR', Sequelize.col('date_achat')), 'annee'],
-                [Sequelize.fn('MONTH', Sequelize.col('date_achat')), 'mois'],
+                [Sequelize.fn('YEAR', Sequelize.col('updatedAt')), 'annee'],
+                [Sequelize.fn('MONTH', Sequelize.col('updatedAt')), 'mois'],
                 [Sequelize.fn('SUM', Sequelize.col('prixTotal')), 'prixTotalParMois']
             ],
             where: {
                 isAcheter: true
             },
-            group: [Sequelize.fn('YEAR', Sequelize.col('date_achat')), Sequelize.fn('MONTH', Sequelize.col('date_achat'))]
+            group: ['annee', 'mois'],
+            order: [
+                [Sequelize.fn('YEAR', Sequelize.col('updatedAt')), 'ASC'],
+                [Sequelize.fn('MONTH', Sequelize.col('updatedAt')), 'ASC']
+            ]
         });
 
-        res.status(200).json(result);
+        res.status(200).json(historique);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+
+exports.editVoiture = async (req, res) => {
+    const voitureId = req.params.id;
+    const { nom, portes, prix, moteurId } = req.body;
+
+    try {
+        const voiture = await Voiture.findByPk(voitureId);
+
+        if (!voiture) {
+            return res.status(404).json({ message: 'Voiture non trouvé' });
+        }
+
+        // if (moteurId) {
+        //     const moteur = await Moteur.findByPk(moteurId);
+        //     console.log(moteur);
+        //     if (!moteur) {
+        //         return res.status(404).json({ message: 'Moteur non trouvé' });
+        //     }
+        //     voiture.setMoteur(moteur);
+        // }
+
+        // voiture.setMoteur(moteur)
+        voiture.nom = nom || voiture.nom;
+        voiture.portes = portes || voiture.portes;
+        voiture.prix = prix || voiture.prix;
+
+        await voiture.save();
+
+        res.status(200).json({ message: 'Voiture mise à jour avec succès', voiture });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+exports.deleteVoiture = async (req, res) => {
+    const voitureId = req.params.id;
+
+    try {
+        const voiture = await Voiture.findByPk(voitureId);
+
+        if (!voiture) {
+            return res.status(404).json({ message: 'Voiture non trouvé' });
+        }
+
+        await voiture.destroy();
+
+        res.status(200).json({ message: 'Voiture supprimée avec succès' });
     } catch (error) {
         res.status(500).json({ message: error.message });
     }

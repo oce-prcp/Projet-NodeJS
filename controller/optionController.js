@@ -28,3 +28,21 @@ exports.optionId= async(req, res)=>{
     const option = await Option.findByPk(parseInt(req.params.id))
     res.status(200).json(option)
 }
+
+exports.delete = async (req, res) => {
+    const optionId = parseInt(req.params.id);
+
+    try {
+        const option = await Option.findByPk(optionId);
+
+        if (!option) {
+            return res.status(404).json({ message: 'Option non trouvée' });
+        }
+
+        await option.destroy();
+
+        res.status(200).json({ message: 'Option supprimée avec succès' });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};

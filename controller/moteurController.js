@@ -28,3 +28,21 @@ exports.moteurId= async(req, res)=>{
     const moteur = await Moteur.findByPk(parseInt(req.params.id))
     res.status(200).json(moteur)
 }
+
+exports.delete = async (req, res) => {
+    const moteurId = parseInt(req.params.id);
+
+    try {
+        const moteur = await Moteur.findByPk(moteurId);
+
+        if (!moteur) {
+            return res.status(404).json({ message: 'Moteur non trouvé' });
+        }
+
+        await moteur.destroy();
+
+        res.status(200).json({ message: 'Moteur supprimé avec succès' });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
