@@ -9,8 +9,10 @@
     </style>
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-        <a class="navbar-brand" href="#">GestionVoiture</a>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <a class="navbar-brand" href="index.html">
+            <img src="img/raudi_logoB.png" alt="logo" width="60" height="40" class="d-inline-block align-top">
+        </a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
@@ -30,8 +32,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
     <script>
-
-document.addEventListener('DOMContentLoaded', function() {
+    
+    document.addEventListener('DOMContentLoaded', function() {
             const navItems = document.getElementById('navItems');
             if (!localStorage.getItem('token')) {
                 navItems.innerHTML = `
@@ -73,7 +75,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     });
                 })
                 .catch(error => console.log('Erreur : ' + error));
-        });
+            });
     </script>
 </body>
 </html>
