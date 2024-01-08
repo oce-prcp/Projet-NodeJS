@@ -3,15 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gestion de Voitures</title>
+    <title>Connexion - Gestion de Voitures</title>
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        .card {
-            margin-top: 20px;
+        .form-container {
+            margin-top: 50px;
         }
     </style>
 </head>
 <body>
+
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
         <a class="navbar-brand" href="index.html">GestionVoiture</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
@@ -24,10 +25,21 @@
     </nav>
 
 
-    <div class="container mt-5">
-        <h1 class="text-center" id="carName">Nom de la Voiture</h1>
-        <div class="card">
-            <div class="card-body" id="carDetails">
+    <div class="container form-container">
+        <div class="row">
+            <div class="col-md-6 offset-md-3">
+                <h2 class="text-center">Connexion</h2>
+                <form id="loginForm">
+                    <div class="form-group">
+                        <label for="inputEmail">Email</label>
+                        <input type="email" class="form-control" id="inputEmail" name="email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="inputPassword">Mot de passe</label>
+                        <input type="password" class="form-control" id="inputPassword" name="password" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-block">Se connecter</button>
+                </form>
             </div>
         </div>
     </div>
@@ -35,7 +47,6 @@
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
-    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const navItems = document.getElementById('navItems');
@@ -55,36 +66,43 @@
                     </li>
                 `;
             }
-
             window.logout = function() {
                 localStorage.removeItem('token');
                 window.location.href = 'login.html';
             };
-            const voitureId = new URLSearchParams(window.location.search).get('id');
-            fetch(`http://localhost:8000/voiture/get/${voitureId}`)
-                .then(response => response.json())
-                .then(data => {
-                    const carDetails = document.getElementById('carDetails');
-                    const voiture = data.voiture;
-                    const moteur = data.moteur;
-                    
-                    document.getElementById('carName').textContent = voiture.nom;
-                    carDetails.innerHTML = `
-                        <h3>Informations de la Voiture</h3>
-                        <p>Nom: ${voiture.nom}</p>
-                        <p>Portes: ${voiture.portes}</p>
-                        <p>Prix: ${voiture.prix}€</p>
-                        <h4>Moteur</h4>
-                        <p>Type: ${moteur.type}</p>
-                        <p>Chevaux: ${moteur.chevaux} cv</p>
-                        <p>Taille: ${moteur.taille} cm3</p>
-                        <a href="achat_voiture.html?id=${voiture.id}" class="btn btn-primary">Acheter</a>
-                    `;
+        });
+        $(document).ready(function() {
+            $('#loginForm').on('submit', function(e) {
+                e.preventDefault();
+    
+                var data = {
+                    email: $('#inputEmail').val(),
+                    password: $('#inputPassword').val()
+                };
+    
+                fetch('http://localhost:8000/utilisateur/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data),
                 })
-                .catch(error => {
-                    console.log('Erreur : ' + error);
-                    carDetails.innerHTML = `<p>Erreur lors du chargement des détails de la voiture.</p>`;
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Échec de la connexion');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('Succès:', data);
+                    localStorage.setItem('token', data.token); 
+                    window.location.href = 'index.html';
+                })
+                .catch((error) => {
+                    console.error('Erreur:', error);
+                    alert('Erreur de connexion : ' + error.message); 
                 });
+            });
         });
     </script>
 </body>

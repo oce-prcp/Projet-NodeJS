@@ -12,25 +12,33 @@ require('dotenv').config()
 
 exports.getAllVoitures = async(req, res)=> {
     try {
-        const voitures = await Voiture.findAll();
+        const voitures = await Voiture.findAll({
+            where: {
+                isAcheter: false
+    }});
         res.json(voitures);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
 }
 
-exports.getVoitureById = async(req, res)=> {
+exports.getVoitureById = async(req, res) => {
     try {
         const voiture = await Voiture.findByPk(req.params.id);
         if (!voiture) {
-            res.status(404).json({ message: 'Voiture non trouvé' });
+            res.status(404).json({ message: 'Voiture non trouvée' });
         } else {
-            res.json(voiture);
+            const moteur = await voiture.getMoteur();
+            if (!moteur) {
+                res.status(404).json({ message: 'Moteur non trouvé' });
+            } else {
+                res.json({ voiture: voiture, moteur: moteur });
+            }
         }
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
-}
+};
 
 exports.createVoiture = async (req, res) => {
     const { nom, portes, prix, moteurId } = req.body;
@@ -89,7 +97,6 @@ exports.acheterVoiture = async(req, res)=> {
         for (let option of await voiture.getOptions()){
             prixTotal += option.prix;
         }
-        console.log(prixTotal + " " + voiture.prixTotal)
         if (prixTotal != voiture.prixTotal){
             voiture.prixTotal = prixTotal    
             voiture.save()
@@ -160,16 +167,6 @@ exports.editVoiture = async (req, res) => {
             return res.status(404).json({ message: 'Voiture non trouvé' });
         }
 
-        // if (moteurId) {
-        //     const moteur = await Moteur.findByPk(moteurId);
-        //     console.log(moteur);
-        //     if (!moteur) {
-        //         return res.status(404).json({ message: 'Moteur non trouvé' });
-        //     }
-        //     voiture.setMoteur(moteur);
-        // }
-
-        // voiture.setMoteur(moteur)
         voiture.nom = nom || voiture.nom;
         voiture.portes = portes || voiture.portes;
         voiture.prix = prix || voiture.prix;

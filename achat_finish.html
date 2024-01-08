@@ -6,11 +6,14 @@
     <title>Gestion de Voitures</title>
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
     <style>
+        .card {
+            margin-top: 20px;
+        }
     </style>
 </head>
 <body>
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-        <a class="navbar-brand" href="#">GestionVoiture</a>
+        <a class="navbar-brand" href="index.html">GestionVoiture</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
@@ -20,18 +23,23 @@
         </div>
     </nav>
 
+
     <div class="container mt-5">
-        <h1 class="text-center">Voitures Disponibles</h1>
-        <div id="carsList" class="row">
+        <h1 class="text-center" id="carName">Nom de la Voiture</h1>
+        <div class="card">
+            <div class="card-body" id="carDetails">
+            </div>
+        </div>
+        <div class="mt-4" id="costDetails">
         </div>
     </div>
 
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
     <script>
-
-document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function() {
             const navItems = document.getElementById('navItems');
             if (!localStorage.getItem('token')) {
                 navItems.innerHTML = `
@@ -49,30 +57,45 @@ document.addEventListener('DOMContentLoaded', function() {
                     </li>
                 `;
             }
-
             window.logout = function() {
                 localStorage.removeItem('token');
                 window.location.href = 'login.html';
             };
-            fetch('http://localhost:8000/voiture/getAll') 
+        });
+        document.addEventListener('DOMContentLoaded', function() {
+            const voitureId = new URLSearchParams(window.location.search).get('id');
+            fetch(`http://localhost:8000/voiture/get/${voitureId}`)
                 .then(response => response.json())
                 .then(data => {
-                    const carsList = document.getElementById('carsList');
-                    data.forEach(car => {
-                        carsList.innerHTML += `
-                            <div class="col-md-4 mt-4">
-                                <div class="card">
-                                    <div class="card-body">
-                                        <h5 class="card-title">${car.nom}</h5>
-                                        <p class="card-text">${car.prix} €</p>
-                                        <a href="details_voiture.html?id=${car.id}" class="btn btn-primary">Voir les détails</a>
-                                    </div>
-                                </div>
-                            </div>
-                        `;
-                    });
+                    const carDetails = document.getElementById('carDetails');
+                    const costDetails = document.getElementById('costDetails');
+                    const voiture = data.voiture;
+                    const moteur = data.moteur;
+
+                    document.getElementById('carName').textContent = voiture.nom;
+                    carDetails.innerHTML = `
+                        <h3>Informations de la Voiture</h3>
+                        <p>Nom: ${voiture.nom}</p>
+                        <p>Portes: ${voiture.portes}</p>
+                        <p>Prix de base: ${voiture.prix} €</p>
+                        <h4>Moteur</h4>
+                        <p>Type: ${moteur.type}</p>
+                        <p>Chevaux: ${moteur.chevaux} cv</p>
+                        <p>Taille: ${moteur.taille} cm3</p>
+                    `;
+
+                    // Calculer et afficher les détails du coût
+                    const optionsCost = voiture.prixTotal - voiture.prix;
+                    costDetails.innerHTML = `
+                        <h4>Détails du Coût</h4>
+                        <p>Coût des Options: ${optionsCost} €</p>
+                        <p>Prix Total: ${voiture.prixTotal} €</p>
+                    `;
                 })
-                .catch(error => console.log('Erreur : ' + error));
+                .catch(error => {
+                    console.log('Erreur : ' + error);
+                    carDetails.innerHTML = `<p>Erreur lors du chargement des détails de la voiture.</p>`;
+                });
         });
     </script>
 </body>

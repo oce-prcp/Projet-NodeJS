@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connexion - Gestion de Voitures</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .form-container {
+            margin-top: 50px;
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <a class="navbar-brand" href="index.html">GestionVoiture</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ml-auto" id="navItems">
+            </ul>
+        </div>
+    </nav>
+
+
+    <div class="container mt-5">
+        <h2 class="text-center">Achat de Voiture</h2>
+        <div id="optionsList" class="mt-4">
+        </div>
+        <button id="buyCar" class="btn btn-success mt-3">Acheter</button>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const voitureId = new URLSearchParams(window.location.search).get('id');
+            
+            // Charger les options disponibles
+            fetch('http://localhost:8000/option/getAll', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `${localStorage.getItem('token')}`
+                }
+            })
+            .then(response => response.json())
+            .then(options => {
+                const optionsList = document.getElementById('optionsList');
+                options.forEach(option => {
+                    const checkbox = document.createElement('input');
+                    checkbox.type = 'checkbox';
+                    checkbox.id = `option-${option.id}`;
+                    checkbox.className = 'custom-control-input';
+                    checkbox.addEventListener('change', function() {
+                        if (this.checked) {
+                            addOption(option.id, voitureId);
+                        } else {
+                            removeOption(option.id, voitureId);
+                        }
+                    });
+
+                    const label = document.createElement('label');
+                    label.htmlFor = checkbox.id;
+                    label.className = 'custom-control-label';
+                    label.textContent = `${option.nom} - ${option.prix} €`;
+
+                    const div = document.createElement('div');
+                    div.className = 'custom-control custom-checkbox';
+                    div.appendChild(checkbox);
+                    div.appendChild(label);
+
+                    optionsList.appendChild(div);
+                });
+            })
+            .catch(error => console.log('Erreur : ' + error));
+
+            // Fonction pour ajouter une option
+            function addOption(optionId, voitureId) {
+                fetch(`http://localhost:8000/voiture/addOption/${optionId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `${localStorage.getItem('token')}`
+                    },
+                    body: JSON.stringify({ "id": voitureId })
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Erreur lors de l\'ajout de l\'option');
+                    }
+                    return response.json();
+                })
+                .catch(error => console.error('Erreur:', error));
+            }
+
+            // Fonction pour supprimer une option
+            function removeOption(optionId, voitureId) {
+                fetch(`http://localhost:8000/voiture/removeOption/${optionId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `${localStorage.getItem('token')}`
+                    },
+                    body: JSON.stringify({ "id": voitureId })
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Erreur lors de la suppression de l\'option');
+                    }
+                    return response.json();
+                })
+                .catch(error => console.error('Erreur:', error));
+            }
+
+            // Gestion de l'achat
+            document.getElementById('buyCar').addEventListener('click', function() {
+                fetch(`http://localhost:8000/voiture/acheter/${voitureId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': `${localStorage.getItem('token')}`
+                    }
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Erreur lors de l\'achat de la voiture');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    alert("Achat réussi !");
+                    window.location.href = `achat_finish.html?id=${voitureId}`;
+                })
+                .catch(error => {
+                    console.error('Erreur:', error);
+                    alert("Erreur lors de l'achat : " + error.message);
+                });
+            });
+        });
+    </script>
+</body>
+</html>

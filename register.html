@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inscription - Gestion de Voitures</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .form-container {
+            margin-top: 50px;
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <a class="navbar-brand" href="index.html">GestionVoiture</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ml-auto" id="navItems">
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container form-container">
+        <div class="row">
+            <div class="col-md-6 offset-md-3">
+                <h2 class="text-center">Inscription</h2>
+                <form id="registerForm">
+                    <div class="form-group">
+                        <label for="inputNom">Nom</label>
+                        <input type="text" class="form-control" id="inputNom" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="inputNom">Prenom</label>
+                        <input type="text" class="form-control" id="inputPrenom" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="inputEmail">Email</label>
+                        <input type="email" class="form-control" id="inputEmail" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="inputPassword">Mot de passe</label>
+                        <input type="password" class="form-control" id="inputPassword" required>
+                    </div>
+                    <!-- Ajoutez d'autres champs si nécessaire -->
+                    <button type="submit" class="btn btn-primary btn-block">S'inscrire</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const navItems = document.getElementById('navItems');
+            if (!localStorage.getItem('token')) {
+                navItems.innerHTML = `
+                    <li class="nav-item">
+                        <a class="nav-link" href="register.html">S'inscrire</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="login.html">Se connecter</a>
+                    </li>
+                `;
+            } else {
+                navItems.innerHTML = `
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" onclick="logout()">Se déconnecter</a>
+                    </li>
+                `;
+            }
+            window.logout = function() {
+                localStorage.removeItem('token');
+                window.location.href = 'login.html';
+            };
+        });
+        $(document).ready(function() {
+            $('#registerForm').on('submit', function(e) {
+                e.preventDefault();
+    
+                var data = {
+                    nom: $('#inputNom').val(),
+                    prenom: $('#inputPrenom').val(),
+                    email: $('#inputEmail').val(),
+                    password: $('#inputPassword').val()
+                };
+    
+                fetch('http://localhost:8000/utilisateur/register', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data),
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Échec de l\'inscription');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('Inscription réussie:', data);
+                    localStorage.setItem('token', data.token); 
+                    window.location.href = 'index.html';
+                })
+                .catch((error) => {
+                    console.error('Erreur:', error);
+                    alert('Erreur d\'inscription : ' + error.message);
+                });
+            });
+        });
+    </script>
+</body>
+</html>
