@@ -25,17 +25,6 @@ exports.getVoitureById = async(req, res)=> {
         if (!voiture) {
             res.status(404).json({ message: 'Voiture non trouvé' });
         } else {
-            console.log(voiture)
-            let prixTotal = voiture.prix
-            console.log(await voiture.getOptions());
-            for (let option of await voiture.getOptions()){
-                prixTotal += option.prix;
-            }
-            console.log(prixTotal + " " + voiture.prixTotal)
-            if (prixTotal != voiture.prixTotal){
-                voiture.prixTotal = prixTotal    
-                voiture.save()
-            }
             res.json(voiture);
         }
     } catch (error) {
@@ -94,6 +83,16 @@ exports.acheterVoiture = async(req, res)=> {
             })
         } else {
             return res.status(400).json({ message: 'Utilisateur non trouvé' });
+        }
+
+        let prixTotal = voiture.prix
+        for (let option of await voiture.getOptions()){
+            prixTotal += option.prix;
+        }
+        console.log(prixTotal + " " + voiture.prixTotal)
+        if (prixTotal != voiture.prixTotal){
+            voiture.prixTotal = prixTotal    
+            voiture.save()
         }
 
         voiture.isAcheter = true;
