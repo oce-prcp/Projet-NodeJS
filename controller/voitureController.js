@@ -44,11 +44,23 @@ exports.getVoitureById = async(req, res)=> {
 }
 
 exports.createVoiture = async (req, res) => {
-    const { nom, portes, prix } = req.body;
+    const { nom, portes, prix, moteurId } = req.body;
 
     try {
-        const newVoiture = await Voiture.create({ nom, portes, prix });
-        res.status(201).json(newVoiture);
+        const moteur = moteurId ? await Moteur.findByPk(moteurId) : null;
+        if (moteurId && !moteur) {
+            return res.status(404).json({ message: 'Moteur non trouvé' });
+        }
+
+        const voiture = await Voiture.create({ nom, portes, prix });
+
+        if (moteur) {
+            await voiture.setMoteur(moteur);
+        }
+
+        await voiture.save();
+
+        res.status(201).json(voiture);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
